@@ -33,7 +33,7 @@ void transform(string ligne, string &lati, string &longi) //()
 	// longitude
 	debuSubStr= finSubStr+1;
 	//s = ;
-	finSubStr = ligne.find("\ ", 100);
+	finSubStr = ligne.find("\\", 100);
 	//debuSubStr = ligne.find_last_of(":") + 1;								/* On prend toujours la trame par la fin et on va demander de garder que ce qu'il y a entre la première virgule et les : */
 	lati = ligne.substr(debuSubStr+10, finSubStr - debuSubStr - 1);
 
