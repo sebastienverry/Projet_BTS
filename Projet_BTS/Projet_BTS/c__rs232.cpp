@@ -1,5 +1,5 @@
-/* c__rs232.hpp
-*/
+//c__rs232.cpp
+
 
 #include "c__rs232.hpp"
 
