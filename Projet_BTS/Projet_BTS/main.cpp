@@ -14,40 +14,65 @@ using namespace std;
 
 void transform(string ligne, string &lati, string &longi) //()
 {
-	string s;
-	string delimiter = ":";
+//	string ligne;
 	string arr[6];
 	string sql;
 	int i = 0;
-	int debuSubStr;
-	int finSubStr;
-	//\r\n+CMGL: 9,\"REC UNREAD\",\"+33780573989\",\"\",\"16/06/02,15:00:00+08\"\r\nCell_Id:
-	ligne = "3DFD Fix:43.773121,7.212598\r\n";            
+	int p_start;
+	int p_end; // position
+//	string latitude;
+//	string longitude;
 
-	// latitude
-	debuSubStr = ligne.find_last_of( "Fix:") + 1; 
-	finSubStr = ligne.find_last_of(",");
-	longi = ligne.substr(debuSubStr, finSubStr - debuSubStr);
-	//strcpy (lati , s);       
+	//ligne = "3DFD Fix:43.773121,7.212598\r\n";
 
-	// longitude
-	debuSubStr= finSubStr+1;
-	//s = ;
-	finSubStr = ligne.find("\\", 100);
-	//debuSubStr = ligne.find_last_of(":") + 1;								/* On prend toujours la trame par la fin et on va demander de garder que ce qu'il y a entre la première virgule et les : */
-	lati = ligne.substr(debuSubStr+10, finSubStr - debuSubStr - 1);
+	//cout << "ligne original: " + ligne + "\n\n";
+
+	// Lattitude
+	p_start = ligne.find_last_of(":") + 1;
+	p_end = ligne.find_last_of(",") - p_start;
+
+	lati = ligne.substr(p_start, p_end);
+
+	//p_start = ligne.find_last_of(":") + 1;
+	//p_end = ligne.find(",") -2;
+
+	//longi =ligne.substr(p_start, p_end); //std::stod(
+
+	// Latitude
+	p_start = ligne.find_last_of(",") + 1;
+	p_end = ligne.length() - (p_start + 5);
 
 
-	//finSubStr = debuSubStr;
-	//debuSubStr = ligne.find_last_of(":", finSubStr - 2) + 1;				/* Ici on reprend ce qui a été fait dans l'étape au dessus */
-	//arr[4] = ligne.substr(debuSubStr, finSubStr - debuSubStr - 6);			/*On prend ce qu'il y a entre l'étape du dessuset les : */
+	cout << p_start << "\n";
+	cout << p_end << "\n";
 
+	longi = ligne.substr(p_start, p_end);
 
+	/*p_start = ligne.find_last_of(",")+1;
+	p_end = ligne.find_last_of(",")- p_start;
+
+	lati = ligne.substr(p_start, p_end);*/
+
+	// Display
+
+	cout << "Latitude:\t" << lati << "\n";
+	cout << "Longitude:\t" << longi<< "\n";
+	//system("pause");
 
 
 	/* Display SQL */
-	//sql = "INSERT INTO markers VALUES('', " + arr[i] + "," + arr[1] + ");";
+	sql = "INSERT INTO markers VALUES('', " + arr[i] + "," + arr[1] + ");";
 }
+
+
+
+/*                                                
+
+				Partie permettant l'envoie du SMS transformer dans la base de donnée
+
+
+*/
+
 
 void EcrireDansBDD(string lat, string  lng)
 {
@@ -60,12 +85,13 @@ void EcrireDansBDD(string lat, string  lng)
 	
 
 	mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
-	if (mysql_real_connect(mysql, "localhost", "root", "", "localisation", 0, NULL, 0))
+	if (mysql_real_connect(mysql,"192.168.241.237", "test1", "test1", "localisation", 0, NULL, 0))
 	{
 		//sprintf_s(
-		requete = "INSERT INTO `markers` ( lat  , lng) VALUES ( '" + lat + "',  '" + lng + "');";
+		
+		requete = "INSERT INTO `markers` ( lat  , lng) VALUES ('" + lat + "',  '" + lng + "');";
 
-		//mysql_query(mysql, "TRUNCATE TABLE `markers`");
+		mysql_query(mysql, "TRUNCATE TABLE `markers`");
 
 		
 		result=mysql_query(mysql, requete.c_str());  
@@ -74,15 +100,15 @@ void EcrireDansBDD(string lat, string  lng)
 		mysql_close(mysql);
 		if (result)
 		{
-			cout << "Les données n'ont pas été enregistrés dans la base" << endl;
+			cout << "Les donnees n'ont pas ete enregistres dans la base" << endl;
 		}
 	}
 	else
 	{
-		printf("Une erreur s'est produite");
+		cout<<"Une erreur s'est produite"<<endl;
 	}
 
-
+	 
 }
 
 
@@ -124,7 +150,7 @@ int main(void)
 
 
 		comman.TxData((char *)"AT+CMGL\r", strlen("AT+CMGL\r"));
-		//sprintf(dest,"AT+CMGL\r");
+		/*sprintf(dest,"AT+CMGL\r");*/
 
 		NbRecus = comman.RxData((char *)RxBuf, sizeof RxBuf);				// ici on stock dans une variable NbRecus La réponse du modem
 		RxBuf[NbRecus] = '\0';
@@ -138,15 +164,17 @@ int main(void)
 		//NbRecus = comman.RxData(RxBuf, sizeof RxBuf);						// ici on stock dans une variable NbRecus La réponse du modem
 		//RxBuf[NbRecus] = '\0';
 		//cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;
-		
+		//
 		//transform(RxBuf);
 		/*strcpy_s(lat , "10.33");
 		strcpy_s(lng , "20.45");*/
+		
+		
 		transform(RxBuf, lat, lng);
 		EcrireDansBDD(lat, lng);
 
 		
 	}
-	system("pause");
+	//system("pause");
 
 }
