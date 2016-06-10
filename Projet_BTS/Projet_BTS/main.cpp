@@ -14,18 +14,13 @@ using namespace std;
 
 void transform(string ligne, string &lati, string &longi) //()
 {
-//	string ligne;
+
 	string arr[6];
 	string sql;
 	int i = 0;
 	int p_start;
 	int p_end; // position
-//	string latitude;
-//	string longitude;
 
-	//ligne = "3DFD Fix:43.773121,7.212598\r\n";
-
-	//cout << "ligne original: " + ligne + "\n\n";
 
 	// Lattitude
 	p_start = ligne.find_last_of(":") + 1;
@@ -33,10 +28,7 @@ void transform(string ligne, string &lati, string &longi) //()
 
 	lati = ligne.substr(p_start, p_end);
 
-	//p_start = ligne.find_last_of(":") + 1;
-	//p_end = ligne.find(",") -2;
-
-	//longi =ligne.substr(p_start, p_end); //std::stod(
+	
 
 	// Latitude
 	p_start = ligne.find_last_of(",") + 1;
@@ -48,10 +40,6 @@ void transform(string ligne, string &lati, string &longi) //()
 
 	longi = ligne.substr(p_start, p_end);
 
-	/*p_start = ligne.find_last_of(",")+1;
-	p_end = ligne.find_last_of(",")- p_start;
-
-	lati = ligne.substr(p_start, p_end);*/
 
 	// Display
 
@@ -148,29 +136,32 @@ int main(void)
 		RxBuf[NbRecus] = '\0';
 		cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;		// NbRecus stock la réponse du modem et on l'affiche
 
-
+		do{
 		comman.TxData((char *)"AT+CMGL\r", strlen("AT+CMGL\r"));
 		/*sprintf(dest,"AT+CMGL\r");*/
-
-		NbRecus = comman.RxData((char *)RxBuf, sizeof RxBuf);				// ici on stock dans une variable NbRecus La réponse du modem
-		RxBuf[NbRecus] = '\0';
-		cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;
-		NbRecus = comman.RxData((char *)RxBuf, sizeof RxBuf);
-		RxBuf[NbRecus] = '\0';
-		cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;		// NbRecus stock la réponse du modem et on l'affiche
-
-		//sprintf_s(dest, "AT+CMGD=1,4\r");
-		//comman.TxData(dest, strlen(dest));									// ici on envoie la commande au Modem
-		//NbRecus = comman.RxData(RxBuf, sizeof RxBuf);						// ici on stock dans une variable NbRecus La réponse du modem
-		//RxBuf[NbRecus] = '\0';
-		//cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;
-		//
-		//transform(RxBuf);
-		/*strcpy_s(lat , "10.33");
-		strcpy_s(lng , "20.45");*/
 		
-		
-		transform(RxBuf, lat, lng);
+
+			NbRecus = comman.RxData((char *)RxBuf, sizeof RxBuf);				// ici on stock dans une variable NbRecus La réponse du modem
+			RxBuf[NbRecus] = '\0';
+			cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;
+			NbRecus = comman.RxData((char *)RxBuf, sizeof RxBuf);
+			RxBuf[NbRecus] = '\0';
+			cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;		// NbRecus stock la réponse du modem et on l'affiche
+
+			//sprintf_s(dest, "AT+CMGD=1,4\r");
+			//comman.TxData(dest, strlen(dest));									// ici on envoie la commande au Modem
+			//NbRecus = comman.RxData(RxBuf, sizeof RxBuf);						// ici on stock dans une variable NbRecus La réponse du modem
+			//RxBuf[NbRecus] = '\0';
+			//cout << "NbRecus : " << NbRecus << " Data: " << RxBuf << endl;
+
+			//transform(RxBuf);
+			/*strcpy_s(lat , "10.33");
+			strcpy_s(lng , "20.45");*/
+
+
+			transform(RxBuf, lat, lng);
+
+		} while (lat == "\r\nOK\r\n");
 		EcrireDansBDD(lat, lng);
 
 		
